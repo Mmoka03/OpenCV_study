@@ -7,7 +7,7 @@ import os
 # savePath: 이미지가 저장될 경로
 # names: 확장자까지 포함한 이미지 파일명 리스트
 # resize_x_list, resize_y_list: 이미지를 자르기 위한 주소 지정 리스트
-def imageGrayColorResizingWrite(defaultPath, savePath, names, resize_x_list, resize_y_list):
+def imageGrayColorResizingWrite(defaultPath, savePath, names, resizeInfo):
     for i in range(len(names)):
         
         #완성형 path
@@ -19,8 +19,11 @@ def imageGrayColorResizingWrite(defaultPath, savePath, names, resize_x_list, res
         img_array = np.fromfile(path, np.uint8)
         full_path = cv2.imdecode(img_array, cv2.IMREAD_GRAYSCALE)
 
+        x = resizeInfo.getX()
+        y = resizeInfo.getY()
+
         #numpy를 사용하여 이미지를 자릅니다.
-        dst = full_path[resize_x_list[i][0]:resize_y_list[i][0], resize_x_list[i][1]:resize_y_list[i][1]].copy()
+        dst = full_path[x[i][0]:y[i][0], x[i][1]:y[i][1]].copy()
         
         #이미지를 지정된 경로에 저장합니다.
         write(savePath, names[i], dst)
@@ -47,13 +50,13 @@ def write(savePath, name, dst):
             encoded_img.tofile(f)
 
 #테스트 편의성용 초기화
-def init():    
+def init(path = './save_image'):    
     
     #사용자 입력을 대기 (0 또는 인자값이 없을 경우 시간 제한없이 대기)
     cv2.waitKey(0)
     
     #테스트 편의성을 위해 경로 직접지정
-    deleteAllImage('./save_image')
+    deleteAllImage(path)
 
     #실행중인 모든 프로그램 종료
     cv2.destroyAllWindows()

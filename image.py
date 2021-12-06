@@ -6,8 +6,8 @@ import os
 # defaultPath: 기본 이미지 경로
 # savePath: 이미지가 저장될 경로
 # names: 확장자까지 포함한 이미지 파일명 리스트
-# resize_x_list, resize_y_list: 이미지를 자르기 위한 주소 지정 리스트
-def imageGrayColorResizingWrite(defaultPath, savePath, names, resizeInfo):
+# resizeInfoList 이미지를 자르기 위한 주소 지정 클래스 리스트
+def imageGrayColorResizingWrite(defaultPath: str, savePath: str, names: list, resizeInfoList: list):
     for i in range(len(names)):
         
         #완성형 path
@@ -19,11 +19,13 @@ def imageGrayColorResizingWrite(defaultPath, savePath, names, resizeInfo):
         img_array = np.fromfile(path, np.uint8)
         full_path = cv2.imdecode(img_array, cv2.IMREAD_GRAYSCALE)
 
-        x = resizeInfo.getX()
-        y = resizeInfo.getY()
+        x1 = resizeInfoList[i].getX1()
+        x2 = resizeInfoList[i].getX2()
+        y1 = resizeInfoList[i].getY1()
+        y2 = resizeInfoList[i].getY2()
 
         #numpy를 사용하여 이미지를 자릅니다.
-        dst = full_path[x[i][0]:y[i][0], x[i][1]:y[i][1]].copy()
+        dst = full_path[x1:y1, x2:y2].copy()
         
         #이미지를 지정된 경로에 저장합니다.
         write(savePath, names[i], dst)
@@ -31,7 +33,7 @@ def imageGrayColorResizingWrite(defaultPath, savePath, names, resizeInfo):
 # savePath: 이미지가 저장될 경로
 # name: 확장자까지 포함한 이미지 파일명
 # dst: numpy.ndarray 타입의 디코딩된 이미지 파일입니다.
-def write(savePath, name, dst):
+def write(savePath: str, name: str, dst: np.ndarray):
 
     #확장자
     extension = os.path.splitext(name)[1]
@@ -50,7 +52,7 @@ def write(savePath, name, dst):
             encoded_img.tofile(f)
 
 #테스트 편의성용 초기화
-def init(path = './save_image'):    
+def init(path: str = './save_image'):    
     
     #사용자 입력을 대기 (0 또는 인자값이 없을 경우 시간 제한없이 대기)
     cv2.waitKey(0)
@@ -62,7 +64,7 @@ def init(path = './save_image'):
     cv2.destroyAllWindows()
 
 #이미지 전체 삭제
-def deleteAllImage(directoryPath):    
+def deleteAllImage(directoryPath: str):    
     
     #경로 존재 확인 후 전체 삭제
     if pathExists(directoryPath):
@@ -72,7 +74,7 @@ def deleteAllImage(directoryPath):
     return False
 
 #경로 존재여부 확인
-def pathExists(path): 
+def pathExists(path: str): 
     if os.path.exists(path):
         return True
     return False
